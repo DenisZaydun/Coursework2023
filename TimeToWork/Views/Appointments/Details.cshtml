@@ -4,11 +4,9 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Деталі</h1>
-
+<h1>Деталі запису</h1>
+<hr />
 <div>
-    <h4>Appointment</h4>
-    <hr />
     <dl class="row">
         <dt class = "col-sm-2">
             Дата
@@ -37,6 +35,6 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.AppointmentId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Edit" asp-route-id="@Model?.AppointmentId">Редагувати</a> |
+    <a asp-action="Index">Назад до списку</a>
 </div>

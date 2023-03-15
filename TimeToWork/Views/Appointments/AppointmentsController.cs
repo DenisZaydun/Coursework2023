@@ -129,7 +129,7 @@ namespace TimeToWork.Views.Appointments
             var defItem = new SelectListItem()
             {
                 Value = "",
-                Text = "---Обрати послугу---"
+                Text = "Обрати послугу"
             };
 
             lstServices.Insert(0, defItem);
@@ -150,7 +150,7 @@ namespace TimeToWork.Views.Appointments
             var defItem = new SelectListItem()
             {
                 Value = "",
-                Text = "---Обрати виконавця---"
+                Text = "Обрати виконавця"
             };
             lstServiceProvider.Insert(0, defItem);
             return lstServiceProvider;

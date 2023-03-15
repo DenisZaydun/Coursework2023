@@ -4,40 +4,31 @@
 	ViewData["Title"] = "Create";
 }
 
-<h1>Створити</h1>
-
-<h4>Appointment</h4>
+<h1>Створити запис</h1>
 <hr />
 <div class="row">
 	<div class="col-md-4">
 		<form asp-action="Create">
 			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
-			@*<div class="form-group">
-                Послуга
-                <select asp-for="ServiceId" class ="form-control" asp-items="ViewBag.ServiceId"></select>
-            </div>*@
-
+			
 			<div class="form-group">
-				<label asp-for="Service" class="control-label"></label>
-				@*<select asp-for="ServiceId" class="form-control" asp-items="ViewBag.ServiceId">
-					<option value="">-- Select Service --</option>
-				</select>*@
-
+				<label class="control-label">Послуга</label>
+				
 				<select id="lstServiceId" asp-for="ServiceId" class="form-control" asp-items="ViewBag.ServiceId" onchange="FillServiceProvider(this, 'lstServiceProvider');"></select>
 				<span asp-validation-for="ServiceId" class="text-danger" />
 			</div>
 
 			<div class="form-group">
-				<label asp-for="ServiceProvider" class="control-label"></label>
+				<label class="control-label">Виконавець</label>
 
 				<select id="lstServiceProvider" asp-for="ServiceProviderID" class="form-control" asp-items="ViewBag.ServiceProviderID"></select>
 				<span asp-validation-for="ServiceProviderID" class="text-danger" />
 			</div>
 
 			<div class="form-group">
-				<label asp-for="Client" class="control-label"></label>
+				<label class="control-label">Клієнт</label>
 				<select asp-for="ClientId" class="form-control" asp-items="ViewBag.ClientId">
-					<option value="">-- Select Client --</option>
+					<option value="">Обрати клієнта</option>
 				</select>
 				<span asp-validation-for="ClientId" class="text-danger" />
 			</div>
@@ -48,14 +39,14 @@
 				<span asp-validation-for="Date" class="text-danger"></span>
 			</div>
 			<div class="form-group">
-				<input type="submit" value="Create" class="btn btn-primary" />
+				<input type="submit" value="Створити" class="btn btn-primary" />
 			</div>
 		</form>
 	</div>
 </div>
 
 <div>
-	<a asp-action="Index">Back to List</a>
+	<a asp-action="Index">Назад до списку</a>
 </div>
 
 @section Scripts {
