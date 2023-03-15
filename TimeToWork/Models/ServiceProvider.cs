@@ -28,5 +28,7 @@ namespace TimeToWork.Models
 		}
 
 		public ICollection<ServiceAssignment> ServiceAssignments { get; set; }
-	}
+
+        public ICollection<Appointment> Appointments { get; set; }
+    }
 }

@@ -11,7 +11,10 @@ namespace TimeToWork.Models
 		[Display(Name = "Дата")]
 		public DateTime Date { get; set; }
 
+		public int ServiceProviderID { get; set; }
+
 		public Service Service { get; set; }
 		public Client Client { get; set; }
+		public ServiceProvider ServiceProvider { get; set; }
 	}
 }

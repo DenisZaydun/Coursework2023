@@ -72,6 +72,8 @@ namespace TimeToWork.Views.Clients
             var client = await _context.Clients
                 .Include(s => s.Appointments)
                 .ThenInclude(e => e.Service)
+                .Include(u => u.Appointments)
+                .ThenInclude(p => p.ServiceProvider)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.ID == id);
             if (client == null)

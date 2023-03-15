@@ -32,6 +32,9 @@
             <th>
                 <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]">Клієнт</a>
             </th>
+            <th>
+                Виконавець
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -47,6 +50,9 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Client.FullName)
             </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ServiceProvider.FullName)
+                </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.AppointmentId">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.AppointmentId">Details</a> |

@@ -36,6 +36,7 @@
             <table class="table">
                 <tr>
                     <th>Послуга</th>
+                    <th>Виконавець</th>
                     <th>Дата</th>
                 </tr>
                 @foreach (var item in Model.Appointments)
@@ -43,6 +44,9 @@
                     <tr>
                         <td>
                             @Html.DisplayFor(modelItem => item.Service.ServiceName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ServiceProvider.FullName)
                         </td>
                         <td>
                             @Html.DisplayFor(modelItem => item.Date)

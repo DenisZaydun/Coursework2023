@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TimeToWork.Data;
 
@@ -11,9 +12,11 @@ using TimeToWork.Data;
 namespace TimeToWork.Migrations
 {
     [DbContext(typeof(TimeToWorkContext))]
-    partial class TimeToWorkContextModelSnapshot : ModelSnapshot
+    [Migration("20230314142214_Add servProv to appointment model")]
+    partial class AddservProvtoappointmentmodel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -39,7 +42,7 @@ namespace TimeToWork.Migrations
                     b.Property<int>("ServiceId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ServiceProviderID")
+                    b.Property<int>("ServiceProviderId")
                         .HasColumnType("int");
 
                     b.HasKey("AppointmentId");
@@ -48,7 +51,7 @@ namespace TimeToWork.Migrations
 
                     b.HasIndex("ServiceId");
 
-                    b.HasIndex("ServiceProviderID");
+                    b.HasIndex("ServiceProviderId");
 
                     b.ToTable("Appointment", (string)null);
                 });
@@ -159,7 +162,7 @@ namespace TimeToWork.Migrations
 
                     b.HasOne("TimeToWork.Models.ServiceProvider", "ServiceProvider")
                         .WithMany()
-                        .HasForeignKey("ServiceProviderID")
+                        .HasForeignKey("ServiceProviderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

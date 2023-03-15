@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Extensions.DependencyInjection;
 using TimeToWork.Data;
 using TimeToWork.Models;
 
@@ -41,10 +42,12 @@ namespace TimeToWork.Views.Appointments
 			var appointments = from s in _context.Appointments
 							   .Include(i => i.Client)
 							   .Include(e => e.Service)
+                               .Include(q => q.ServiceProvider)
 							   select s;
+
 			if (!String.IsNullOrEmpty(searchString))
 			{
-				appointments = appointments.Where(s => s.Client.LastName.Contains(searchString) || s.Client.FirstName.Contains(searchString) || s.Service.ServiceName.Contains(searchString) || s.Date.ToString().Contains(searchString));
+				appointments = appointments.Where(s => s.Client.LastName.Contains(searchString) || s.Client.FirstName.Contains(searchString) || s.Service.ServiceName.Contains(searchString) || s.Date.ToString().Contains(searchString) || (s.Client.LastName+" "+ s.Client.FirstName).Contains(searchString) || (s.ServiceProvider.LastName + " " + s.ServiceProvider.FirstName).Contains(searchString));
 			}
 			switch (sortOrder)
 			{
@@ -83,6 +86,7 @@ namespace TimeToWork.Views.Appointments
             var appointment = await _context.Appointments
                 .Include(a => a.Client)
                 .Include(a => a.Service)
+                .Include(a => a.ServiceProvider)
                 .FirstOrDefaultAsync(m => m.AppointmentId == id);
             if (appointment == null)
             {
@@ -110,14 +114,70 @@ namespace TimeToWork.Views.Appointments
 			ViewBag.SelectedClient = selectedClient;
 		}
 
-		// GET: Appointments/Create
-		public IActionResult Create()
+        private List<SelectListItem> GetService()
+        {
+            var lstServices = new List<SelectListItem>();
+
+            List<Service> Services = _context.Services.ToList();
+
+            lstServices = Services.Select(sr => new SelectListItem()
+            {
+                Value = sr.ServiceId.ToString(),
+                Text = sr.ServiceName
+            }).ToList();
+
+            var defItem = new SelectListItem()
+            {
+                Value = "",
+                Text = "---Обрати послугу---"
+            };
+
+            lstServices.Insert(0, defItem);
+            return lstServices;
+        }
+        private List<SelectListItem> GetServiceProvider(int serviceId = 1)
+        {
+            List<SelectListItem> lstServiceProvider = _context.ServiceAssignments
+                .Where(p => p.ServiceID == serviceId)
+                .OrderBy(n => n.ServiceProvider.LastName)
+                .Select(n => 
+                new SelectListItem
+                {
+                    Value = n.ServiceProvider.ID.ToString(),
+                    Text = n.ServiceProvider.FullName
+                }).ToList();
+
+            var defItem = new SelectListItem()
+            {
+                Value = "",
+                Text = "---Обрати виконавця---"
+            };
+            lstServiceProvider.Insert(0, defItem);
+            return lstServiceProvider;
+
+        }
+
+        [HttpGet]
+        public JsonResult GetServiceProviderByService(int serviceId)
+        {
+            List<SelectListItem> serviceProvider = GetServiceProvider(serviceId);
+            return Json(serviceProvider);
+        }
+
+
+        // GET: Appointments/Create
+        public IActionResult Create()
         {
             //ViewData["ClientId"] = new SelectList(_context.Clients, "ID", "FullName");
-            PopulateClientDropDownList();
             //ViewData["ServiceId"] = new SelectList(_context.Services, "ServiceId", "ServiceName");
-            PopulateServicesDropDownList();
-			return View();
+            
+            PopulateClientDropDownList();
+            //PopulateServicesDropDownList();
+
+            ViewBag.ServiceId = GetService();
+            //ViewBag.ServiceProviderID = GetServiceProvider();
+
+            return View();
         }
 
         // POST: Appointments/Create
@@ -125,7 +185,7 @@ namespace TimeToWork.Views.Appointments
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("AppointmentId,ServiceId,ClientId,Date")] Appointment appointment)
+        public async Task<IActionResult> Create([Bind("AppointmentId,ServiceId,ServiceProviderID,ClientId,Date")] Appointment appointment)
         {
             if (ModelState.IsValid)
             {
@@ -135,9 +195,12 @@ namespace TimeToWork.Views.Appointments
             }
             //ViewData["ClientId"] = new SelectList(_context.Clients, "ID", "FullName", appointment.ClientId);
             PopulateClientDropDownList(appointment.ClientId);
-            //ViewData["ServiceId"] = new SelectList(_context.Services, "ServiceId", "ServiceName", appointment.ServiceId);
-            PopulateServicesDropDownList(appointment.ServiceId);
-            return View(appointment);
+			//ViewData["ServiceId"] = new SelectList(_context.Services, "ServiceId", "ServiceName", appointment.ServiceId);
+			//PopulateServicesDropDownList(appointment.ServiceId);
+
+			ViewData["ServiceId"] = new SelectList(_context.Services, "ServiceId", "ServiceName", appointment.ServiceId);
+			ViewData["ServiceProviderID"] = new SelectList(_context.Services, "ServiceProviderID", "FullName", appointment.ServiceProviderID);
+			return View(appointment);
         }
 
         // GET: Appointments/Edit/5
@@ -154,8 +217,10 @@ namespace TimeToWork.Views.Appointments
                 return NotFound();
             }
             ViewData["ClientId"] = new SelectList(_context.Clients, "ID", "FullName", appointment.ClientId);
-            ViewData["ServiceId"] = new SelectList(_context.Services, "ServiceId", "ServiceName", appointment.ServiceId);
-            return View(appointment);
+            ViewData["ServiceId"] = GetService();
+            int index = appointment.ServiceProviderID;
+			ViewData["ServiceProviderID"] = GetServiceProvider(index);
+			return View(appointment);
         }
 
         // POST: Appointments/Edit/5
@@ -163,7 +228,7 @@ namespace TimeToWork.Views.Appointments
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("AppointmentId,ServiceId,ClientId,Date")] Appointment appointment)
+        public async Task<IActionResult> Edit(int id, [Bind("AppointmentId,ServiceId,ServiceProviderID,ClientId,Date")] Appointment appointment)
         {
             if (id != appointment.AppointmentId)
             {
@@ -192,7 +257,8 @@ namespace TimeToWork.Views.Appointments
             }
             ViewData["ClientId"] = new SelectList(_context.Clients, "ID", "FullName", appointment.ClientId);
             ViewData["ServiceId"] = new SelectList(_context.Services, "ServiceId", "ServiceName", appointment.ServiceId);
-            return View(appointment);
+			ViewData["ServiceProviderID"] = new SelectList(_context.Services, "ServiceProviderID", "FullName", appointment.ServiceProviderID);
+			return View(appointment);
         }
 
         // GET: Appointments/Delete/5
@@ -206,6 +272,7 @@ namespace TimeToWork.Views.Appointments
             var appointment = await _context.Appointments
                 .Include(a => a.Client)
                 .Include(a => a.Service)
+                .Include(a => a.ServiceProvider)
                 .FirstOrDefaultAsync(m => m.AppointmentId == id);
             if (appointment == null)
             {
