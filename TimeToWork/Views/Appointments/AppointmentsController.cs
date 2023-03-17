@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.DependencyInjection;
@@ -92,6 +93,9 @@ namespace TimeToWork.Views.Appointments
             {
                 return NotFound();
             }
+
+            System.TimeSpan duration = new System.TimeSpan(0, appointment.Service.ЕxecutionTimeHours, appointment.Service.ЕxecutionTimeMinutes, 0);
+            ViewData["EndOfMeating"] = appointment.Date.Add(duration);
 
             return View(appointment);
         }

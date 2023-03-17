@@ -90,12 +90,21 @@ namespace TimeToWork.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("Price")
+                        .HasColumnType("int");
+
                     b.Property<string>("ServiceName")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("ShortDescription")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ЕxecutionTimeHours")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ЕxecutionTimeMinutes")
+                        .HasColumnType("int");
 
                     b.HasKey("ServiceId");
 
@@ -158,7 +167,7 @@ namespace TimeToWork.Migrations
                         .IsRequired();
 
                     b.HasOne("TimeToWork.Models.ServiceProvider", "ServiceProvider")
-                        .WithMany()
+                        .WithMany("Appointments")
                         .HasForeignKey("ServiceProviderID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -203,6 +212,8 @@ namespace TimeToWork.Migrations
 
             modelBuilder.Entity("TimeToWork.Models.ServiceProvider", b =>
                 {
+                    b.Navigation("Appointments");
+
                     b.Navigation("ServiceAssignments");
                 });
 #pragma warning restore 612, 618

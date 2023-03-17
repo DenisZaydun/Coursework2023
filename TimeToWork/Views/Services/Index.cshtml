@@ -30,7 +30,10 @@
                 Короткий опис
             </th>
             <th>
-                Опис
+                Ціна
+            </th>
+            <th>
+                Час виконання
             </th>
             <th></th>
         </tr>
@@ -44,6 +47,13 @@
             <td>
                 @Html.DisplayFor(modelItem => item.ShortDescription)
             </td>
+
+            <td>
+                @Html.DisplayFor(modelItem => item.Price) ₴
+            </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ЕxecutionTimeHours)<span>:</span>@Html.DisplayFor(modelItem => item.ЕxecutionTimeMinutes)
+                </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.ServiceId">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.ServiceId">Details</a> |

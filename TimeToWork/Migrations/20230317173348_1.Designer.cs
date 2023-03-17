@@ -12,8 +12,8 @@ using TimeToWork.Data;
 namespace TimeToWork.Migrations
 {
     [DbContext(typeof(TimeToWorkContext))]
-    [Migration("20230314142214_Add servProv to appointment model")]
-    partial class AddservProvtoappointmentmodel
+    [Migration("20230317173348_1")]
+    partial class _1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -42,7 +42,7 @@ namespace TimeToWork.Migrations
                     b.Property<int>("ServiceId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ServiceProviderId")
+                    b.Property<int>("ServiceProviderID")
                         .HasColumnType("int");
 
                     b.HasKey("AppointmentId");
@@ -51,7 +51,7 @@ namespace TimeToWork.Migrations
 
                     b.HasIndex("ServiceId");
 
-                    b.HasIndex("ServiceProviderId");
+                    b.HasIndex("ServiceProviderID");
 
                     b.ToTable("Appointment", (string)null);
                 });
@@ -93,12 +93,21 @@ namespace TimeToWork.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("Price")
+                        .HasColumnType("int");
+
                     b.Property<string>("ServiceName")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("ShortDescription")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ЕxecutionTimeHours")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ЕxecutionTimeMinutes")
+                        .HasColumnType("int");
 
                     b.HasKey("ServiceId");
 
@@ -161,8 +170,8 @@ namespace TimeToWork.Migrations
                         .IsRequired();
 
                     b.HasOne("TimeToWork.Models.ServiceProvider", "ServiceProvider")
-                        .WithMany()
-                        .HasForeignKey("ServiceProviderId")
+                        .WithMany("Appointments")
+                        .HasForeignKey("ServiceProviderID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -206,6 +215,8 @@ namespace TimeToWork.Migrations
 
             modelBuilder.Entity("TimeToWork.Models.ServiceProvider", b =>
                 {
+                    b.Navigation("Appointments");
+
                     b.Navigation("ServiceAssignments");
                 });
 #pragma warning restore 612, 618

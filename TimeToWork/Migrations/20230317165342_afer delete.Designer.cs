@@ -12,29 +12,26 @@ using TimeToWork.Data;
 namespace TimeToWork.Migrations
 {
     [DbContext(typeof(TimeToWorkContext))]
-    [Migration("20221206151209_qwertyuiop")]
-    partial class qwertyuiop
+    [Migration("20230317165342_afer delete")]
+    partial class aferdelete
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.0")
+                .HasAnnotation("ProductVersion", "7.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("TimeToWork.Models.Appointment", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("AppointmentId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
-
-                    b.Property<int>("AppointmentId")
-                        .HasColumnType("int");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AppointmentId"));
 
                     b.Property<int>("ClientId")
                         .HasColumnType("int");
@@ -45,10 +42,10 @@ namespace TimeToWork.Migrations
                     b.Property<int>("ServiceId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ServiceProviderID")
+                    b.Property<int>("ServiceProviderID")
                         .HasColumnType("int");
 
-                    b.HasKey("ID");
+                    b.HasKey("AppointmentId");
 
                     b.HasIndex("ClientId");
 
@@ -96,12 +93,18 @@ namespace TimeToWork.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("Price")
+                        .HasColumnType("int");
+
                     b.Property<string>("ServiceName")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("ShortDescription")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ЕxecutionTimeMinutes")
+                        .HasColumnType("int");
 
                     b.HasKey("ServiceId");
 
@@ -164,8 +167,10 @@ namespace TimeToWork.Migrations
                         .IsRequired();
 
                     b.HasOne("TimeToWork.Models.ServiceProvider", "ServiceProvider")
-                        .WithMany()
-                        .HasForeignKey("ServiceProviderID");
+                        .WithMany("Appointments")
+                        .HasForeignKey("ServiceProviderID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Client");
 
@@ -207,6 +212,8 @@ namespace TimeToWork.Migrations
 
             modelBuilder.Entity("TimeToWork.Models.ServiceProvider", b =>
                 {
+                    b.Navigation("Appointments");
+
                     b.Navigation("ServiceAssignments");
                 });
 #pragma warning restore 612, 618

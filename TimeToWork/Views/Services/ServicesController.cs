@@ -89,7 +89,7 @@ namespace TimeToWork.Views.Services
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ServiceId,ServiceName,ShortDescription,Description")] Service service)
+        public async Task<IActionResult> Create([Bind("ServiceId,ServiceName,ShortDescription,Description,Price,ЕxecutionTimeHours,ЕxecutionTimeMinutes")] Service service)
         {
             if (ModelState.IsValid)
             {
@@ -121,7 +121,7 @@ namespace TimeToWork.Views.Services
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ServiceId,ServiceName,ShortDescription,Description")] Service service)
+        public async Task<IActionResult> Edit(int id, [Bind("ServiceId,ServiceName,ShortDescription,Description,Price,ЕxecutionTimeHours,ЕxecutionTimeMinutes")] Service service)
         {
             if (id != service.ServiceId)
             {
