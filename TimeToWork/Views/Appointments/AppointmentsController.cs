@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Policy;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -28,7 +29,9 @@ namespace TimeToWork.Views.Appointments
 			ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
 			ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
 			ViewData["ServiceSortParm"] = sortOrder == "Service" ? "service_desc" : "Service";
-			ViewData["CurrentFilter"] = searchString;
+            ViewData["ServiceProviderSortParm"] = sortOrder == "ServiceProvider" ? "serviceProvider_desc" : "ServiceProvider";
+            ViewData["PriceParm"] = sortOrder == "Price" ? "Price_desc" : "Price";
+            ViewData["CurrentFilter"] = searchString;
 			ViewData["CurrentSort"] = sortOrder;
 
 			if (searchString != null)
@@ -67,7 +70,19 @@ namespace TimeToWork.Views.Appointments
 				case "service_desc":
 					appointments = appointments.OrderByDescending(s => s.Service.ServiceName);
 					break;
-				default:
+                case "ServiceProvider":
+                    appointments = appointments.OrderBy(s => s.ServiceProvider.LastName);
+                    break;
+                case "serviceProvider_desc":
+                    appointments = appointments.OrderByDescending(s => s.ServiceProvider.LastName);
+                    break;
+                case "Price":
+                    appointments = appointments.OrderBy(s => s.Service.Price);
+                    break;
+                case "Price_desc":
+                    appointments = appointments.OrderByDescending(s => s.Service.Price);
+                    break;
+                default:
 					appointments = appointments.OrderBy(s => s.Date);
 					break;
 			}
@@ -139,7 +154,7 @@ namespace TimeToWork.Views.Appointments
             lstServices.Insert(0, defItem);
             return lstServices;
         }
-        private List<SelectListItem> GetServiceProvider(int serviceId = 1)
+        private List<SelectListItem> GetServiceProvider(int serviceId)
         {
             List<SelectListItem> lstServiceProvider = _context.ServiceAssignments
                 .Where(p => p.ServiceID == serviceId)
@@ -222,8 +237,7 @@ namespace TimeToWork.Views.Appointments
             }
             ViewData["ClientId"] = new SelectList(_context.Clients, "ID", "FullName", appointment.ClientId);
             ViewData["ServiceId"] = GetService();
-            int index = appointment.ServiceProviderID;
-			ViewData["ServiceProviderID"] = GetServiceProvider(index);
+            ViewData["ServiceProviderID"] = GetServiceProvider(appointment.ServiceId);
 			return View(appointment);
         }
 
@@ -308,6 +322,63 @@ namespace TimeToWork.Views.Appointments
         private bool AppointmentExists(int id)
         {
           return (_context.Appointments?.Any(e => e.AppointmentId == id)).GetValueOrDefault();
+        }
+
+
+        // GET: Appointments/Done/5
+        public async Task<IActionResult> Done(int? id)
+        {
+            if (id == null || _context.Appointments == null)
+            {
+                return NotFound();
+            }
+
+            var done = await _context.Appointments
+                .Include(a => a.Client)
+                .Include(a => a.Service)
+                .Include(a => a.ServiceProvider)
+                .FirstOrDefaultAsync(m => m.AppointmentId == id);
+            if (done == null)
+            {
+                return NotFound();
+            }
+
+            System.TimeSpan duration = new System.TimeSpan(0, done.Service.ЕxecutionTimeHours, done.Service.ЕxecutionTimeMinutes, 0);
+            ViewData["EndOfMeating"] = done.Date.Add(duration);
+
+            return View(done);
+        }
+
+        // POST: Appointments/Done/5
+        [HttpPost, ActionName("Done")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DoneConfirmed(int id)
+        {
+            if (_context.Appointments == null)
+            {
+                return Problem("Entity set 'TimeToWorkContext.Appointments'  is null.");
+            }
+            var appointment = await _context.Appointments.FindAsync(id);
+
+            Done done = new Done();
+            done.ServiceId = appointment.ServiceId;
+            done.ClientId = appointment.ClientId;
+            done.Date = appointment.Date;
+            done.ServiceProviderID = appointment.ServiceProviderID;
+
+            if (ModelState.IsValid)
+            {
+                _context.Add(done);
+                await _context.SaveChangesAsync();
+            }
+
+            if (appointment != null)
+            {
+                _context.Appointments.Remove(appointment);
+            }
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
     }
 }

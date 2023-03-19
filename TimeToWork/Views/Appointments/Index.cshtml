@@ -34,7 +34,10 @@
                 <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]">Клієнт</a>
             </th>
             <th>
-                Виконавець
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["ServiceProviderSortParm"]">Виконавець</a>
+            </th>
+            <th>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["PriceParm"]">Ціна</a>
             </th>
             <th></th>
         </tr>
@@ -51,13 +54,17 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Client.FullName)
             </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ServiceProvider.FullName)
+            </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.ServiceProvider.FullName)
+                    @Html.DisplayFor(modelItem => item.Service.Price)₴
                 </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.AppointmentId">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.AppointmentId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.AppointmentId">Delete</a>
+                <a asp-action="Delete" asp-route-id="@item.AppointmentId">Delete</a> |
+                <a asp-action="Done" asp-route-id="@item.AppointmentId">Done</a>
             </td>
         </tr>
 }

@@ -28,6 +28,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXBwb2ludG1lbnRzXERldGFpbHMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
+[E:/My_Projects/TimeToWork/TimeToWork/Views/Appointments/Done.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXBwb2ludG1lbnRzXERvbmUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [E:/My_Projects/TimeToWork/TimeToWork/Views/Appointments/Edit.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXBwb2ludG1lbnRzXEVkaXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
@@ -54,6 +58,18 @@ build_metadata.AdditionalFiles.CssScope =
 
 [E:/My_Projects/TimeToWork/TimeToWork/Views/Clients/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2xpZW50c1xJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/My_Projects/TimeToWork/TimeToWork/Views/Dones/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRG9uZXNcRGVsZXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/My_Projects/TimeToWork/TimeToWork/Views/Dones/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRG9uZXNcRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/My_Projects/TimeToWork/TimeToWork/Views/Dones/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRG9uZXNcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [E:/My_Projects/TimeToWork/TimeToWork/Views/Home/Index.cshtml]

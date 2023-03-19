@@ -21,6 +21,7 @@ namespace TimeToWork.Data
 		public DbSet<ServiceProvider> ServiceProviders { get; set; }
 		public DbSet<ServiceAssignment> ServiceAssignments { get; set; }
         public DbSet<PlaceOfWork> PlaceOfWorks { get; set; }
+        public DbSet<Done> Done { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{

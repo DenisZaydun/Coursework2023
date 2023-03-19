@@ -79,6 +79,37 @@ namespace TimeToWork.Migrations
                     b.ToTable("Client", (string)null);
                 });
 
+            modelBuilder.Entity("TimeToWork.Models.Done", b =>
+                {
+                    b.Property<int>("DoneId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DoneId"));
+
+                    b.Property<int>("ClientId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ServiceId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ServiceProviderID")
+                        .HasColumnType("int");
+
+                    b.HasKey("DoneId");
+
+                    b.HasIndex("ClientId");
+
+                    b.HasIndex("ServiceId");
+
+                    b.HasIndex("ServiceProviderID");
+
+                    b.ToTable("Done");
+                });
+
             modelBuilder.Entity("TimeToWork.Models.PlaceOfWork", b =>
                 {
                     b.Property<int>("ServiceProviderID")
@@ -182,6 +213,33 @@ namespace TimeToWork.Migrations
 
                     b.HasOne("TimeToWork.Models.ServiceProvider", "ServiceProvider")
                         .WithMany("Appointments")
+                        .HasForeignKey("ServiceProviderID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Client");
+
+                    b.Navigation("Service");
+
+                    b.Navigation("ServiceProvider");
+                });
+
+            modelBuilder.Entity("TimeToWork.Models.Done", b =>
+                {
+                    b.HasOne("TimeToWork.Models.Client", "Client")
+                        .WithMany()
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TimeToWork.Models.Service", "Service")
+                        .WithMany()
+                        .HasForeignKey("ServiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TimeToWork.Models.ServiceProvider", "ServiceProvider")
+                        .WithMany()
                         .HasForeignKey("ServiceProviderID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
