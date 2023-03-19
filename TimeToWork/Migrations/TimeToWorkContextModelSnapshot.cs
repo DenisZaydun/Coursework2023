@@ -79,6 +79,20 @@ namespace TimeToWork.Migrations
                     b.ToTable("Client", (string)null);
                 });
 
+            modelBuilder.Entity("TimeToWork.Models.PlaceOfWork", b =>
+                {
+                    b.Property<int>("ServiceProviderID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Location")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("ServiceProviderID");
+
+                    b.ToTable("PlaceOfWork", (string)null);
+                });
+
             modelBuilder.Entity("TimeToWork.Models.Service", b =>
                 {
                     b.Property<int>("ServiceId")
@@ -179,6 +193,17 @@ namespace TimeToWork.Migrations
                     b.Navigation("ServiceProvider");
                 });
 
+            modelBuilder.Entity("TimeToWork.Models.PlaceOfWork", b =>
+                {
+                    b.HasOne("TimeToWork.Models.ServiceProvider", "ServiceProvider")
+                        .WithOne("PlaceOfWork")
+                        .HasForeignKey("TimeToWork.Models.PlaceOfWork", "ServiceProviderID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ServiceProvider");
+                });
+
             modelBuilder.Entity("TimeToWork.Models.ServiceAssignment", b =>
                 {
                     b.HasOne("TimeToWork.Models.Service", "Service")
@@ -213,6 +238,8 @@ namespace TimeToWork.Migrations
             modelBuilder.Entity("TimeToWork.Models.ServiceProvider", b =>
                 {
                     b.Navigation("Appointments");
+
+                    b.Navigation("PlaceOfWork");
 
                     b.Navigation("ServiceAssignments");
                 });

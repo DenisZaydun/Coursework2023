@@ -25,10 +25,6 @@ namespace TimeToWork.Views.ServiceProviders
         // GET: ServiceProviders
         public async Task<IActionResult> Index(string sortOrder, string currentFilter, string searchString, int? pageNumber)
         {
-            //return _context.ServiceProviders != null ? 
-            //            View(await _context.ServiceProviders.ToListAsync()) :
-            //            Problem("Entity set 'TimeToWorkContext.ServiceProviders'  is null.");
-
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
             ViewData["CurrentFilter"] = searchString;
@@ -44,7 +40,8 @@ namespace TimeToWork.Views.ServiceProviders
             }
 
             var serviceProviders = from s in _context.ServiceProviders
-                               select s;
+                                   .Include(s => s.PlaceOfWork)
+                                   select s;
             if (!String.IsNullOrEmpty(searchString))
             {
                 serviceProviders = serviceProviders.Where(s => s.LastName.Contains(searchString) || s.FirstName.Contains(searchString) || s.HireDate.ToString().Contains(searchString));
@@ -78,6 +75,7 @@ namespace TimeToWork.Views.ServiceProviders
             }
 
             var serviceProvider = await _context.ServiceProviders
+                .Include(s => s.PlaceOfWork)
                 .Include(a => a.ServiceAssignments.Where(p => p.ServiceProviderID ==id)
                 .OrderBy(i => i.Service.ServiceName))
                 .ThenInclude(q => q.Service)
@@ -106,16 +104,8 @@ namespace TimeToWork.Views.ServiceProviders
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID,LastName,FirstName,HireDate")] ServiceProvider serviceProvider, string[] selectedServices)
+        public async Task<IActionResult> Create([Bind("ID,LastName,FirstName,HireDate,PlaceOfWork")] ServiceProvider serviceProvider, string[] selectedServices)
         {
-            //if (ModelState.IsValid)
-            //{
-            //    _context.Add(serviceProvider);
-            //    await _context.SaveChangesAsync();
-            //    return RedirectToAction(nameof(Index));
-            //}
-            //return View(serviceProvider);
-
             if (selectedServices != null)
             {
                 serviceProvider.ServiceAssignments = new List<ServiceAssignment>();
@@ -143,9 +133,8 @@ namespace TimeToWork.Views.ServiceProviders
                 return NotFound();
             }
 
-            //var serviceProvider = await _context.ServiceProviders.FindAsync(id);
-
             var serviceProvider = await _context.ServiceProviders
+                .Include(i => i.PlaceOfWork)
                 .Include(i => i.ServiceAssignments).ThenInclude(i => i.Service)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.ID == id);
@@ -182,39 +171,13 @@ namespace TimeToWork.Views.ServiceProviders
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int? id, string[] selectedServices)
         {
-            //if (id != serviceProvider.ID)
-            //{
-            //    return NotFound();
-            //}
-
-            //if (ModelState.IsValid)
-            //{
-            //    try
-            //    {
-            //        _context.Update(serviceProvider);
-            //        await _context.SaveChangesAsync();
-            //    }
-            //    catch (DbUpdateConcurrencyException)
-            //    {
-            //        if (!ServiceProviderExists(serviceProvider.ID))
-            //        {
-            //            return NotFound();
-            //        }
-            //        else
-            //        {
-            //            throw;
-            //        }
-            //    }
-            //    return RedirectToAction(nameof(Index));
-            //}
-            //return View(serviceProvider);
-
             if (id == null)
             {
                 return NotFound();
             }
 
             var serviceProviderToUpdate = await _context.ServiceProviders
+                .Include(c => c.PlaceOfWork)
                 .Include(i => i.ServiceAssignments)
                     .ThenInclude(i => i.Service)
                 .FirstOrDefaultAsync(m => m.ID == id);
@@ -222,12 +185,12 @@ namespace TimeToWork.Views.ServiceProviders
             if (await TryUpdateModelAsync<ServiceProvider>(
                 serviceProviderToUpdate,
                 "",
-                i => i.FirstName, i => i.LastName, i => i.HireDate))
+                i => i.FirstName, i => i.LastName, i => i.HireDate, i => i.PlaceOfWork))
             {
-                //if (String.IsNullOrWhiteSpace(serviceProviderToUpdate.OfficeAssignment?.Location))
-                //{
-                //    serviceProviderToUpdate.OfficeAssignment = null;
-                //}
+                if (String.IsNullOrWhiteSpace(serviceProviderToUpdate.PlaceOfWork?.Location))
+                {
+                    serviceProviderToUpdate.PlaceOfWork = null;
+                }
                 UpdateServiceProviderServices(selectedServices, serviceProviderToUpdate);
                 try
                 {
@@ -288,6 +251,7 @@ namespace TimeToWork.Views.ServiceProviders
             }
 
             var serviceProvider = await _context.ServiceProviders
+                .Include(s => s.PlaceOfWork)
                 .FirstOrDefaultAsync(m => m.ID == id);
             if (serviceProvider == null)
             {
@@ -302,19 +266,6 @@ namespace TimeToWork.Views.ServiceProviders
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            //if (_context.ServiceProviders == null)
-            //{
-            //    return Problem("Entity set 'TimeToWorkContext.ServiceProviders'  is null.");
-            //}
-            //var serviceProvider = await _context.ServiceProviders.FindAsync(id);
-            //if (serviceProvider != null)
-            //{
-            //    _context.ServiceProviders.Remove(serviceProvider);
-            //}
-
-            //await _context.SaveChangesAsync();
-            //return RedirectToAction(nameof(Index));
-
             ServiceProvider serviceProvider = await _context.ServiceProviders
                 .Include(i => i.ServiceAssignments)
                 .SingleAsync(i => i.ID == id);

@@ -20,16 +20,18 @@ namespace TimeToWork.Data
 		public DbSet<Client> Clients { get; set; }
 		public DbSet<ServiceProvider> ServiceProviders { get; set; }
 		public DbSet<ServiceAssignment> ServiceAssignments { get; set; }
+        public DbSet<PlaceOfWork> PlaceOfWorks { get; set; }
 
-		protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			modelBuilder.Entity<Service>().ToTable("Service");
 			modelBuilder.Entity<Appointment>().ToTable("Appointment");
 			modelBuilder.Entity<Client>().ToTable("Client");
 			modelBuilder.Entity<ServiceProvider>().ToTable("ServiceProvider");
 			modelBuilder.Entity<ServiceAssignment>().ToTable("ServiceAssignment");
+            modelBuilder.Entity<PlaceOfWork>().ToTable("PlaceOfWork");
 
-			modelBuilder.Entity<ServiceAssignment>()
+            modelBuilder.Entity<ServiceAssignment>()
 				.HasKey(c => new { c.ServiceID, c.ServiceProviderID });
 		}
 	}
