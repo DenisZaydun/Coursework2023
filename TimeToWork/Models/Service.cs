@@ -22,12 +22,12 @@ namespace TimeToWork.Models
 
         [Display(Name = "Час зустрічі годин")]
         [Range(0, 23,
-        ErrorMessage = "Максимум 23")]
+        ErrorMessage = "Максимум 23 години")]
         public int ЕxecutionTimeHours { get; set; }
 
         [Display(Name = "Час зустрічі хвилин")]
         [Range(0, 59,
-        ErrorMessage = "Максимум 59")]
+        ErrorMessage = "Максимум 59 хвилин")]
         public int ЕxecutionTimeMinutes { get; set; }
 
         public ICollection<Appointment> Appointments { get; set; }
