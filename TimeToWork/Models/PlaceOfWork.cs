@@ -6,6 +6,8 @@ namespace TimeToWork.Models
     {
         [Key]
         public int ServiceProviderID { get; set; }
+        
+        [Required]
         [StringLength(50)]
         public string Location { get; set; }
 

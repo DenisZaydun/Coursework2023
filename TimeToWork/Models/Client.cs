@@ -25,7 +25,9 @@ namespace TimeToWork.Models
 			}
 		}
 
-		[Display(Name = "Номер телефону")]
+        [Required]
+        [StringLength(15, ErrorMessage = "Не більше 15 символів.")]
+        [Display(Name = "Номер телефону")]
 		public string PhoneNumber { get; set; }
 
 		public ICollection<Appointment> Appointments { get; set; }
