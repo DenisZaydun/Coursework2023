@@ -56,7 +56,7 @@ namespace TimeToWork.Views.Clients
                     break;
             }
             //return View(await clients.AsNoTracking().ToListAsync());
-            int pageSize = 7;
+            int pageSize = 9;
             return View(await PaginatedList<Client>.CreateAsync(clients.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
 

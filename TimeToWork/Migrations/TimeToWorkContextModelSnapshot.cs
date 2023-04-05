@@ -73,7 +73,8 @@ namespace TimeToWork.Migrations
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
 
                     b.HasKey("ID");
 
