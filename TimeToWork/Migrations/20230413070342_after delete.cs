@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace TimeToWork.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class afterdelete : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -24,6 +24,19 @@ namespace TimeToWork.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Client", x => x.ID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PlaceOfWork",
+                columns: table => new
+                {
+                    PlaceOfWorkID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Location = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PlaceOfWork", x => x.PlaceOfWorkID);
                 });
 
             migrationBuilder.CreateTable(
@@ -52,11 +65,18 @@ namespace TimeToWork.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    HireDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    HireDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    PlaceOfWorkID = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ServiceProvider", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_ServiceProvider_PlaceOfWork_PlaceOfWorkID",
+                        column: x => x.PlaceOfWorkID,
+                        principalTable: "PlaceOfWork",
+                        principalColumn: "PlaceOfWorkID",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -128,24 +148,6 @@ namespace TimeToWork.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "PlaceOfWork",
-                columns: table => new
-                {
-                    ServiceProviderID = table.Column<int>(type: "int", nullable: false),
-                    Location = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PlaceOfWork", x => x.ServiceProviderID);
-                    table.ForeignKey(
-                        name: "FK_PlaceOfWork_ServiceProvider_ServiceProviderID",
-                        column: x => x.ServiceProviderID,
-                        principalTable: "ServiceProvider",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "ServiceAssignment",
                 columns: table => new
                 {
@@ -203,6 +205,11 @@ namespace TimeToWork.Migrations
                 name: "IX_ServiceAssignment_ServiceProviderID",
                 table: "ServiceAssignment",
                 column: "ServiceProviderID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ServiceProvider_PlaceOfWorkID",
+                table: "ServiceProvider",
+                column: "PlaceOfWorkID");
         }
 
         /// <inheritdoc />
@@ -215,9 +222,6 @@ namespace TimeToWork.Migrations
                 name: "Done");
 
             migrationBuilder.DropTable(
-                name: "PlaceOfWork");
-
-            migrationBuilder.DropTable(
                 name: "ServiceAssignment");
 
             migrationBuilder.DropTable(
@@ -228,6 +232,9 @@ namespace TimeToWork.Migrations
 
             migrationBuilder.DropTable(
                 name: "Service");
+
+            migrationBuilder.DropTable(
+                name: "PlaceOfWork");
         }
     }
 }

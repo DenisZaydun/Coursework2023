@@ -27,7 +27,9 @@ namespace TimeToWork.Models
 			get { return LastName + " " + FirstName; }
 		}
 
-		public string PlaceOfWork { get; set; }
+        public int PlaceOfWorkID { get; set; }
+
+        public PlaceOfWork PlaceOfWork { get; set; }
 
 		public ICollection<ServiceAssignment> ServiceAssignments { get; set; }
 

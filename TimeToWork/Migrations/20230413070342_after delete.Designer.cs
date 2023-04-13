@@ -12,8 +12,8 @@ using TimeToWork.Data;
 namespace TimeToWork.Migrations
 {
     [DbContext(typeof(TimeToWorkContext))]
-    [Migration("20230410172601_delete table placeOfWork")]
-    partial class deletetableplaceOfWork
+    [Migration("20230413070342_after delete")]
+    partial class afterdelete
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -115,6 +115,24 @@ namespace TimeToWork.Migrations
                     b.ToTable("Done");
                 });
 
+            modelBuilder.Entity("TimeToWork.Models.PlaceOfWork", b =>
+                {
+                    b.Property<int>("PlaceOfWorkID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PlaceOfWorkID"));
+
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.HasKey("PlaceOfWorkID");
+
+                    b.ToTable("PlaceOfWork");
+                });
+
             modelBuilder.Entity("TimeToWork.Models.Service", b =>
                 {
                     b.Property<int>("ServiceId")
@@ -185,10 +203,12 @@ namespace TimeToWork.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("PlaceOfWork")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("PlaceOfWorkID")
+                        .HasColumnType("int");
 
                     b.HasKey("ID");
+
+                    b.HasIndex("PlaceOfWorkID");
 
                     b.ToTable("ServiceProvider", (string)null);
                 });
@@ -266,9 +286,25 @@ namespace TimeToWork.Migrations
                     b.Navigation("ServiceProvider");
                 });
 
+            modelBuilder.Entity("TimeToWork.Models.ServiceProvider", b =>
+                {
+                    b.HasOne("TimeToWork.Models.PlaceOfWork", "PlaceOfWork")
+                        .WithMany("ServiceProvider")
+                        .HasForeignKey("PlaceOfWorkID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PlaceOfWork");
+                });
+
             modelBuilder.Entity("TimeToWork.Models.Client", b =>
                 {
                     b.Navigation("Appointments");
+                });
+
+            modelBuilder.Entity("TimeToWork.Models.PlaceOfWork", b =>
+                {
+                    b.Navigation("ServiceProvider");
                 });
 
             modelBuilder.Entity("TimeToWork.Models.Service", b =>

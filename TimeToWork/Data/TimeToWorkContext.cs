@@ -33,5 +33,7 @@ namespace TimeToWork.Data
             modelBuilder.Entity<ServiceAssignment>()
 				.HasKey(c => new { c.ServiceID, c.ServiceProviderID });
 		}
+
+        public DbSet<TimeToWork.Models.PlaceOfWork> PlaceOfWork { get; set; }
 	}
 }

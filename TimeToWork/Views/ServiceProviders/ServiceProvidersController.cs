@@ -40,6 +40,7 @@ namespace TimeToWork.Views.ServiceProviders
             }
 
             var serviceProviders = from s in _context.ServiceProviders
+                                   .Include(i => i.PlaceOfWork)
                                    select s;
             if (!String.IsNullOrEmpty(searchString))
             {
@@ -74,6 +75,7 @@ namespace TimeToWork.Views.ServiceProviders
             }
 
             var serviceProvider = await _context.ServiceProviders
+                .Include(l => l.PlaceOfWork)
                 .Include(a => a.ServiceAssignments.Where(p => p.ServiceProviderID ==id)
                 .OrderBy(i => i.Service.ServiceName))
                 .ThenInclude(q => q.Service)
@@ -88,12 +90,21 @@ namespace TimeToWork.Views.ServiceProviders
             return View(serviceProvider);
         }
 
+        private void GetLocation(object selectedLocation = null)
+        {
+            var locationQuery = from d in _context.PlaceOfWork
+                                   orderby d.Location
+                                   select d;
+            ViewBag.PlaceOfWorkID = new SelectList(locationQuery.AsNoTracking(), "PlaceOfWorkID", "Location", selectedLocation);
+        }
+
         // GET: ServiceProviders/Create
         public IActionResult Create()
         {
             var serviceProvider = new ServiceProvider();
             serviceProvider.ServiceAssignments = new List<ServiceAssignment>();
             PopulateAssignedServiceData(serviceProvider);
+            GetLocation();
             return View();
         }
 
@@ -102,7 +113,7 @@ namespace TimeToWork.Views.ServiceProviders
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID,LastName,FirstName,HireDate,PlaceOfWork")] ServiceProvider serviceProvider, string[] selectedServices)
+        public async Task<IActionResult> Create([Bind("ID,LastName,FirstName,HireDate,PlaceOfWorkID")] ServiceProvider serviceProvider, string[] selectedServices)
         {
             if (selectedServices != null)
             {
@@ -141,6 +152,7 @@ namespace TimeToWork.Views.ServiceProviders
                 return NotFound();
             }
             PopulateAssignedServiceData(serviceProvider);
+            GetLocation();
             return View(serviceProvider);
         }
 
@@ -174,6 +186,7 @@ namespace TimeToWork.Views.ServiceProviders
             }
 
             var serviceProviderToUpdate = await _context.ServiceProviders
+                .Include(p => p.PlaceOfWork)
                 .Include(i => i.ServiceAssignments)
                     .ThenInclude(i => i.Service)
                 .FirstOrDefaultAsync(m => m.ID == id);
@@ -181,7 +194,7 @@ namespace TimeToWork.Views.ServiceProviders
             if (await TryUpdateModelAsync<ServiceProvider>(
                 serviceProviderToUpdate,
                 "",
-                i => i.FirstName, i => i.LastName, i => i.HireDate, i=> i.PlaceOfWork))
+                i => i.FirstName, i => i.LastName, i => i.HireDate, i=> i.PlaceOfWorkID))
             {
                 
                 UpdateServiceProviderServices(selectedServices, serviceProviderToUpdate);
@@ -244,6 +257,7 @@ namespace TimeToWork.Views.ServiceProviders
             }
 
             var serviceProvider = await _context.ServiceProviders
+                .Include(r => r.PlaceOfWork)
                 .FirstOrDefaultAsync(m => m.ID == id);
             if (serviceProvider == null)
             {
