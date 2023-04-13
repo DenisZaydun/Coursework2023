@@ -40,7 +40,6 @@ namespace TimeToWork.Views.ServiceProviders
             }
 
             var serviceProviders = from s in _context.ServiceProviders
-                                   .Include(s => s.PlaceOfWork)
                                    select s;
             if (!String.IsNullOrEmpty(searchString))
             {
@@ -75,7 +74,6 @@ namespace TimeToWork.Views.ServiceProviders
             }
 
             var serviceProvider = await _context.ServiceProviders
-                .Include(s => s.PlaceOfWork)
                 .Include(a => a.ServiceAssignments.Where(p => p.ServiceProviderID ==id)
                 .OrderBy(i => i.Service.ServiceName))
                 .ThenInclude(q => q.Service)
@@ -134,7 +132,6 @@ namespace TimeToWork.Views.ServiceProviders
             }
 
             var serviceProvider = await _context.ServiceProviders
-                .Include(i => i.PlaceOfWork)
                 .Include(i => i.ServiceAssignments).ThenInclude(i => i.Service)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.ID == id);
@@ -177,7 +174,6 @@ namespace TimeToWork.Views.ServiceProviders
             }
 
             var serviceProviderToUpdate = await _context.ServiceProviders
-                .Include(c => c.PlaceOfWork)
                 .Include(i => i.ServiceAssignments)
                     .ThenInclude(i => i.Service)
                 .FirstOrDefaultAsync(m => m.ID == id);
@@ -185,12 +181,9 @@ namespace TimeToWork.Views.ServiceProviders
             if (await TryUpdateModelAsync<ServiceProvider>(
                 serviceProviderToUpdate,
                 "",
-                i => i.FirstName, i => i.LastName, i => i.HireDate, i => i.PlaceOfWork))
+                i => i.FirstName, i => i.LastName, i => i.HireDate, i=> i.PlaceOfWork))
             {
-                if (String.IsNullOrWhiteSpace(serviceProviderToUpdate.PlaceOfWork?.Location))
-                {
-                    serviceProviderToUpdate.PlaceOfWork = null;
-                }
+                
                 UpdateServiceProviderServices(selectedServices, serviceProviderToUpdate);
                 try
                 {
@@ -251,7 +244,6 @@ namespace TimeToWork.Views.ServiceProviders
             }
 
             var serviceProvider = await _context.ServiceProviders
-                .Include(s => s.PlaceOfWork)
                 .FirstOrDefaultAsync(m => m.ID == id);
             if (serviceProvider == null)
             {
